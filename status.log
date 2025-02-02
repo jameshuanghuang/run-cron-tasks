@@ -1,0 +1,20 @@
+2025-02-01 20:10:05,378 - INFO - API_KEY: secret_api_key_empty
+2025-02-01 20:10:05,401 - INFO - Data is up to date.
+2025-02-01 20:10:05,466 - INFO - BTC.D data is up to date.
+2025-02-01 20:10:06,907 - INFO - MSTR option data is up to date.
+2025-02-01 20:10:08,030 - INFO - PLTR option data is up to date.
+2025-02-01 20:10:09,882 - INFO - NVDA option data is up to date.
+2025-02-01 20:10:10,603 - INFO - IBIT option data is up to date.
+2025-02-01 20:10:10,891 - INFO - KW option data is up to date.
+2025-02-01 22:18:52,437 - INFO - API_KEY: secret_api_key_empty
+2025-02-01 22:18:52,450 - INFO - Data is up to date.
+2025-02-01 22:18:52,595 - INFO - BTC.D data is up to date.
+2025-02-01 22:18:52,595 - INFO - Get tickers from watchlist.
+2025-02-01 22:18:52,595 - INFO - Fetched watchlist: ['QQQ', 'MSTR', 'PLTR', 'NVDA', 'VST', 'GOOG', 'SOFI']
+2025-02-01 22:18:54,374 - INFO - QQQ option data is up to date.
+2025-02-01 22:18:55,594 - INFO - MSTR option data is up to date.
+2025-02-01 22:18:56,671 - INFO - PLTR option data is up to date.
+2025-02-01 22:18:58,456 - INFO - NVDA option data is up to date.
+2025-02-01 22:18:59,426 - INFO - VST option data is up to date.
+2025-02-01 22:19:00,412 - INFO - GOOG option data is up to date.
+2025-02-01 22:19:01,402 - INFO - SOFI option data is up to date.

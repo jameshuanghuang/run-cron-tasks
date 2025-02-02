@@ -1,0 +1,6 @@
+logging==0.4.9.6
+pandas==2.2.3
+pyotp==2.9.0
+python-dotenv==1.0.1
+requests==2.32.3
+yfinance==0.2.51
