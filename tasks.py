@@ -216,3 +216,4 @@ if __name__ == "__main__":
     if watch_list:
         for ticker in watch_list:
             job3(ticker)
+    job5()
