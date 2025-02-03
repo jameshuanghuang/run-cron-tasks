@@ -66,3 +66,17 @@
 2025-02-03 02:18:57,765 - INFO - VST option data is up to date.
 2025-02-03 02:18:58,821 - INFO - GOOG option data is up to date.
 2025-02-03 02:18:59,777 - INFO - SOFI option data is up to date.
+2025-02-03 02:26:25,581 - INFO - API_KEY: secret_api_key_empty
+2025-02-03 02:26:25,605 - INFO - Data is up to date.
+2025-02-03 02:26:25,649 - INFO - BTC.D data is up to date.
+2025-02-03 02:26:25,649 - INFO - Get tickers from watchlist.
+2025-02-03 02:26:25,649 - INFO - Fetched watchlist: ['QQQ', 'MSTR', 'PLTR', 'NVDA', 'VST', 'GOOG', 'SOFI']
+2025-02-03 02:26:27,907 - INFO - QQQ option data is up to date.
+2025-02-03 02:26:29,261 - INFO - MSTR option data is up to date.
+2025-02-03 02:26:30,845 - INFO - PLTR option data is up to date.
+2025-02-03 02:26:32,758 - INFO - NVDA option data is up to date.
+2025-02-03 02:26:33,821 - INFO - VST option data is up to date.
+2025-02-03 02:26:34,864 - INFO - GOOG option data is up to date.
+2025-02-03 02:26:35,849 - INFO - SOFI option data is up to date.
+2025-02-03 02:26:35,850 - INFO - Sending email to arron.r@example.com about unusual option activity in MSTR
+2025-02-03 02:26:35,850 - INFO - Sending email to elaine.e@example.com about unusual option activity in MSTR
