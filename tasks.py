@@ -55,7 +55,7 @@ def job2():
 
     BTCCap = 0
     altCap = 0
-    current_time = pd.Timestamp.today().tz_localize('UTC').strftime('%Y-%m-%d')
+    current_time = pd.Timestamp.today().tz_localize('UTC').strftime('%Y-%m-%d %H:%M')
 
     for x in response:
         if x['id'] == "bitcoin": #adds bitcoin market cap to BTCCap and altCap
@@ -70,37 +70,63 @@ def job2():
     
     logger.info(f"BTC.D data is up to date.")
 
+def fetch_option_chain_with_retry(ticker, expiry, max_retries=3, timeout=30):
+    attempts = 0
+    while attempts < max_retries:
+        try:
+            option_chain = ticker.option_chain(expiry)
+            return option_chain  # Return the data if successful
+        except Exception as e:
+            attempts += 1
+            logger.error(f"Attempt {attempts} failed for expiry {expiry} of ticker {ticker.ticker}. Error: {e}")
+            if attempts < max_retries:
+                time.sleep(5)  # Wait for 5 seconds before retrying
+            else:
+                logger.error(f"Max retries reached for {expiry}. Moving to the next expiry.")
+                raise  # Re-raise exception if max retries are exceeded
+
 def job3(inputTicker):
     ticker = yf.Ticker(inputTicker)
     expiry_dates = ticker.options
 
     df_call_list = []
-    df_put_list = []
+    # df_put_list = []
 
     for expiry in expiry_dates:
-        option_chain = ticker.option_chain(expiry)
+        try:
+            option_chain = fetch_option_chain_with_retry(ticker, expiry)  # Using the retry function
+            # Append call and put options data to respective lists
+            option_chain.calls['expiry'] = expiry
+            # option_chain.puts['expiry'] = expiry
+
+            df_call_list.append(option_chain.calls)
+            # df_put_list.append(option_chain.puts)
         
-        option_chain.calls['expiry'] = expiry
-        option_chain.puts['expiry'] = expiry
+        except Exception as e:
+            logger.error(f"Failed to fetch data for expiry {expiry} of ticker {inputTicker}. Skipping this expiry.")
+            continue  # Skip the current expiry if error occurs and proceed to the next one
 
-        df_call_list.append(option_chain.calls)
-        df_put_list.append(option_chain.puts)
+    # Concatenate all the dataframes into one
+    df = pd.concat(df_call_list, axis=0)
+    # df_put = pd.concat(df_put_list, axis=0)
+    # df = pd.concat([df_call, df_put], axis=0)
 
-    df_call = pd.concat(df_call_list, axis=0)
-    df_put = pd.concat(df_put_list, axis=0)
-    df = pd.concat([df_call, df_put], axis=0)
+    # Drop unnecessary columns
     df.drop(['change', 'percentChange', 'contractSize', 'currency'], axis=1, inplace=True)
 
+    # Extract option type from the contract symbol
     df['optionType'] = df['contractSymbol'].apply(
         lambda x: re.match(r'([A-Za-z]+)(\d{6})([CP])(\d+)', x).group(3)  # Use group(3) to get the option type
     )
 
+    # Sort by relevant columns
     df.sort_values(
-        by=['optionType', 'expiry', 'strike'],  # List of columns to sort by
-        ascending=[True, True, True],  # Specify ascending/descending order for each column
+        by=['optionType', 'expiry', 'strike'],
+        ascending=[True, True, True],
         inplace=True
     )
 
+    # Save the data to CSV
     today = pd.Timestamp.today().tz_localize('UTC').strftime('%Y-%m-%d')
     df.to_csv(f"./output/options/{today}/OMON_{inputTicker}_{today}.csv", index=False)
 
@@ -115,7 +141,7 @@ def job4():
         ['LUCK', 'SPOT', 'LMND', 'KW'],
         []
     ]
-    prob = [0.8, 0.15, 0.05]
+    prob = [1.0, 0.0, 0.0]
     
     # Use watch_lists as values and prob for selection
     watch_list_selected = random.choices(watch_lists, prob)[0]
@@ -127,7 +153,42 @@ def job4():
         logger.info(f"Watchlist is empty")
 
 def job5():
-    logger.info(f"Sending email to 123@gmail.com")
+    # Subscriber data
+    subscribers = {
+        'Jason': {
+            'email': 'jason.k@gmail.com',
+            'watchlist': ['AMZN', 'O']
+        },
+        'Arron': {
+            'email': 'arron.r@example.com',
+            'watchlist': ['MSTR', 'GOOG']
+        },
+        'Mike': {
+            'email': 'mike.m@example.com',
+            'watchlist': ['TSLA']
+        },
+        'Elaine': {
+            'email': 'elaine.e@example.com',
+            'watchlist': ['AAPL', 'MSTR']
+        },
+        'Sofia': {
+            'email': 'sofia.s@example.com',
+            'watchlist': ['AMZN', 'MSFT']
+        }
+    }
+
+    unusual_option_activity = ['MSTR']
+
+    for subscriber, details in subscribers.items():
+        # Check if subscriber has a watchlist and email
+        if 'watchlist' in details and details['watchlist']:
+            # Check if any of the unusual activity is in the subscriber's watchlist
+            for stock in unusual_option_activity:
+                if stock in details['watchlist']:
+                    # Send email
+                    email = details['email']
+                    logger.info(f"Sending email to {email} about unusual option activity in {stock}")
+                    # send_email(email, stock)
 
 try:
     API_KEY = os.environ["API_KEY"]
@@ -152,5 +213,6 @@ if __name__ == "__main__":
     job2()
 
     watch_list = job4()
-    for ticker in watch_list:
-        job3(ticker)
+    if watch_list:
+        for ticker in watch_list:
+            job3(ticker)

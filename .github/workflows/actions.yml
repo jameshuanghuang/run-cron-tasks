@@ -3,7 +3,7 @@ name: run tasks.py
 on:
   schedule:
     # - cron: '*/5 * * * *' # Every 5 minutes
-    - cron: '0 */12 * * *' # Every 12 hours
+    - cron: '0 */6 * * *' # Every 6 hours
     # - cron: '5 * * * *' # At minute 5 of every hour 5 + 60*N
     # - cron: '30 20 * * 1-5' # Every weekday (Monday to Friday) at 8:30 PM
     # - cron: '30 9 1 * *' # Every month on the 1st at 9:30 AM
