@@ -10,46 +10,45 @@ import random
 logging.basicConfig(level=logging.INFO, filename='status.log', filemode='a', format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def job1():
+def fetch_crypto_data_from_yf(ticker):
     try:
-        df = pd.read_csv('./output/crypto/BTC.csv', index_col=0, parse_dates=True)
+        df = pd.read_csv(f'./output/crypto/{ticker}.csv', index_col=0, parse_dates=True)
     except FileNotFoundError:
         df = pd.DataFrame()
 
-    BTC = yf.Ticker('BTC-USD')
+    crypto = yf.Ticker(f'{ticker}-USD')
 
     if df.empty:
-        btc_data = BTC.history(period='max')
-        with open('./output/crypto/BTC.csv', mode='a', newline='') as file:
+        crypto_data = crypto.history(period='max')
+        with open(f'./output/crypto/{ticker}.csv', mode='a', newline='') as file:
             writer = csv.writer(file)
 
             if file.tell() == 0:
-                writer.writerow(['Date'] + btc_data.columns.to_list())
+                writer.writerow(['Date'] + crypto_data.columns.to_list())
 
-            for date, row in btc_data.iterrows():
+            for date, row in crypto_data.iterrows():
                 writer.writerow([date.strftime('%Y-%m-%d %H:%M:%S%z')] + row.tolist())
             
-        logger.info(f"Created .csv file. Pulled max history.")
+        logger.info(f"Created .csv file. Pulled max history for {ticker}.")
         return
     else:
         start_date = df.index[-1] + pd.DateOffset(days=1)
         cur_date = pd.Timestamp.today().tz_localize('UTC')
 
         if start_date < cur_date:
-            # btc_data = BTC.history(period='1D')
-            btc_data = BTC.history(start=start_date) # # [,)
-            cnt = btc_data.shape[0]
-            with open('./output/crypto/BTC.csv', mode='a', newline='') as file:
+            crypto_data = crypto.history(start=start_date)
+            cnt = crypto_data.shape[0]
+            with open(f'./output/crypto/{ticker}.csv', mode='a', newline='') as file:
                 writer = csv.writer(file)
 
-                for date, row in btc_data.iterrows():
+                for date, row in crypto_data.iterrows():
                     writer.writerow([date.strftime('%Y-%m-%d %H:%M:%S%z')] + row.tolist())
 
-            logger.info(f"Appended {cnt} rows to data starting from {btc_data.index[0].date()} to {btc_data.index[-1].date()}.")
+            logger.info(f"Appended {cnt} rows to data starting from {crypto_data.index[0].date()} to {crypto_data.index[-1].date()} for {ticker}.")
         else:
-            logger.info(f"Data is up to date.")
+            logger.info(f"Data for {ticker} is up to date.")
 
-def job2():
+def fetch_btc_dominance():
     response = requests.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false')
     response = response.json()
 
@@ -85,7 +84,7 @@ def fetch_option_chain_with_retry(ticker, expiry, max_retries=3, timeout=30):
                 logger.error(f"Max retries reached for {expiry}. Moving to the next expiry.")
                 raise  # Re-raise exception if max retries are exceeded
 
-def job3(inputTicker):
+def fetch_option_chain_yf(inputTicker):
     ticker = yf.Ticker(inputTicker)
     expiry_dates = ticker.options
 
@@ -132,27 +131,32 @@ def job3(inputTicker):
 
     logger.info(f"{inputTicker} option data is up to date.")
 
-def job4():
+def get_watch_list():
     logger.info(f"Get tickers from watchlist.")
 
-    # Mimic getting tickers from watchlist.
-    watch_lists = [
-        ['QQQ', 'MSTR', 'PLTR', 'NVDA', 'VST', 'GOOG', 'SOFI'],
-        ['LUCK', 'SPOT', 'LMND', 'KW'],
-        []
-    ]
-    prob = [1.0, 0.0, 0.0]
-    
-    # Use watch_lists as values and prob for selection
-    watch_list_selected = random.choices(watch_lists, prob)[0]
+    try:
+        # Mimic getting tickers from a real API
+        response = requests.get('https://api.example.com/watchlist')
+        response.raise_for_status()  # Raise an error for bad status codes
+        watch_list = response.json()
+    except requests.RequestException as e:
+        logger.error(f"Failed to fetch watchlist from API: {e}")
+        # Fallback to predefined watchlists
+        watch_list = ['QQQ', 'MSTR', 'PLTR', 'NVDA', 'VST', 'GOOG', 'SOFI']
 
-    if watch_list_selected:
-        logger.info(f"Fetched watchlist: {watch_list_selected}")
-        return watch_list_selected
+    if watch_list:
+        logger.info(f"Fetched watchlist: {watch_list}")
+        return watch_list
     else:
         logger.info(f"Watchlist is empty")
+        return []
 
-def job5():
+def notify_subscribers(unusual_option_activity):
+
+    if not unusual_option_activity:
+        logger.info("Unusual_option_activity is emppty.")
+        return
+
     # Subscriber data
     subscribers = {
         'Jason': {
@@ -177,8 +181,6 @@ def job5():
         }
     }
 
-    unusual_option_activity = ['MSTR']
-
     for subscriber, details in subscribers.items():
         # Check if subscriber has a watchlist and email
         if 'watchlist' in details and details['watchlist']:
@@ -188,7 +190,14 @@ def job5():
                     # Send email
                     email = details['email']
                     logger.info(f"Sending email to {email} about unusual option activity in {stock}")
-                    # send_email(email, stock)
+                    try:
+                        stock_data_link = f"https://example.com/{stock}"
+                        send_email(email, stock_data_link)
+                    except Exception as e:
+                        logger.error(f"Failed to send email to {email} about {stock}: {e}")
+
+def send_email(email, stock_data_link):
+    logger.info(f"Email sent to {email} with stock data link: {stock_data_link}") 
 
 try:
     API_KEY = os.environ["API_KEY"]
@@ -196,24 +205,32 @@ except KeyError:
     API_KEY = "secret_api_key_empty"
 
 if __name__ == "__main__":
-    logger.info(f"API_KEY: {API_KEY}")
-    # https://www.python-engineer.com/posts/run-python-github-actions/
+    # logger.info(f"API_KEY: {API_KEY}")
+    # # https://www.python-engineer.com/posts/run-python-github-actions/
 
     today = pd.Timestamp.today().tz_localize('UTC').strftime('%Y-%m-%d')
     crypto_path = 'output/crypto/'
     option_path = f'output/options/{today}'
-    
+
     if not os.path.exists(crypto_path):
         os.makedirs(crypto_path)
-    
+
     if not os.path.exists(option_path):
         os.makedirs(option_path)
 
-    job1()
-    job2()
+    # Fetch crypto data
+    crypto_watch_list = ['BTC', 'ETH', 'ADA']
+    if crypto_watch_list:
+        for ticker in crypto_watch_list:
+            fetch_crypto_data_from_yf(ticker)
 
-    watch_list = job4()
-    if watch_list:
-        for ticker in watch_list:
-            job3(ticker)
-    job5()
+    # Fetch BTC dominance
+    fetch_btc_dominance()
+
+    # Fetch option chain data
+    watch_list = get_watch_list()
+    for ticker in watch_list:
+        fetch_option_chain_yf(ticker)
+
+    # Notify subscribers about unusual option activity
+    notify_subscribers(watch_list)

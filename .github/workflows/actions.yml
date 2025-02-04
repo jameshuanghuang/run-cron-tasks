@@ -3,11 +3,12 @@ name: run tasks.py
 on:
   schedule:
     # - cron: '*/5 * * * *' # Every 5 minutes
-    - cron: '0 */6 * * *' # Every 6 hours
+    # - cron: '0 */6 * * *' # Every 6 hours
     # - cron: '5 * * * *' # At minute 5 of every hour 5 + 60*N
     # - cron: '30 20 * * 1-5' # Every weekday (Monday to Friday) at 8:30 PM
     # - cron: '30 9 1 * *' # Every month on the 1st at 9:30 AM
     - cron: '59 23 * * *' # Every day at 11:59 PM
+    - cron: '40 09 * * *' # Every day at 9:40 AM
     # - cron: '45 20 * * 5' # At 8:45PM on Friday
     # - cron: '50 20 30 6 *' # June 30th at 8:50 PM
     # - cron: '30 20 31 12 1-5' # December 31st at 8:30 PM ONLY if on weekday
