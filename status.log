@@ -290,3 +290,23 @@
 2025-02-07 01:05:50,902 - INFO - Email sent to arron.r@example.com with stock data link: https://example.com/GOOG
 2025-02-07 01:05:50,902 - INFO - Sending email to elaine.e@example.com about unusual option activity in MSTR
 2025-02-07 01:05:50,902 - INFO - Email sent to elaine.e@example.com with stock data link: https://example.com/MSTR
+2025-02-07 09:47:09,646 - INFO - Data for BTC is up to date.
+2025-02-07 09:47:09,661 - INFO - Data for ETH is up to date.
+2025-02-07 09:47:09,676 - INFO - Data for ADA is up to date.
+2025-02-07 09:47:09,744 - INFO - BTC.D data is up to date.
+2025-02-07 09:47:09,744 - INFO - Get tickers from watchlist.
+2025-02-07 09:47:09,758 - ERROR - Failed to fetch watchlist from API: HTTPSConnectionPool(host='api.example.com', port=443): Max retries exceeded with url: /watchlist (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x7f6300b5ddc0>: Failed to resolve 'api.example.com' ([Errno -2] Name or service not known)"))
+2025-02-07 09:47:09,758 - INFO - Fetched watchlist: ['QQQ', 'MSTR', 'PLTR', 'NVDA', 'VST', 'GOOG', 'SOFI']
+2025-02-07 09:47:11,820 - INFO - QQQ option data is up to date.
+2025-02-07 09:47:13,474 - INFO - MSTR option data is up to date.
+2025-02-07 09:47:14,961 - INFO - PLTR option data is up to date.
+2025-02-07 09:47:17,274 - INFO - NVDA option data is up to date.
+2025-02-07 09:47:18,541 - INFO - VST option data is up to date.
+2025-02-07 09:47:19,727 - INFO - GOOG option data is up to date.
+2025-02-07 09:47:20,756 - INFO - SOFI option data is up to date.
+2025-02-07 09:47:20,756 - INFO - Sending email to arron.r@example.com about unusual option activity in MSTR
+2025-02-07 09:47:20,756 - INFO - Email sent to arron.r@example.com with stock data link: https://example.com/MSTR
+2025-02-07 09:47:20,756 - INFO - Sending email to arron.r@example.com about unusual option activity in GOOG
+2025-02-07 09:47:20,756 - INFO - Email sent to arron.r@example.com with stock data link: https://example.com/GOOG
+2025-02-07 09:47:20,756 - INFO - Sending email to elaine.e@example.com about unusual option activity in MSTR
+2025-02-07 09:47:20,756 - INFO - Email sent to elaine.e@example.com with stock data link: https://example.com/MSTR
